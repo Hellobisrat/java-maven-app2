@@ -53,16 +53,21 @@ pipeline {
             }
         }
 
-        stage('deploy') {
-            steps {
-                script {
-                    echo 'deploying docker image...'
-                    sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
-                    sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
+         stage('deploy') {
+            withCredentials([
+        string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    
+                    sh '''
+                        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                        export AWS_DEFAULT_REGION=us-east-1
 
+                        envsubst < kubernetes/deployment.yaml | kubectl apply -f -
+                    '''
                 }
             }
-        }
 
         stage('commit version update') {
             steps {

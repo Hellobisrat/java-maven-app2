@@ -84,17 +84,27 @@ pipeline {
         script {
             withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
 
+                
                 sh '''
                     git config user.email "zerbisrat@gmail.com"
                     git config user.name "Hellobisrat"
 
                     git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app.git
 
-                    git pull origin main --rebase || true
+                    # Stash local changes (version bump)
+                    git stash
 
+                    # Pull latest changes from GitHub
+                    git pull origin main --rebase
+
+                    # Re-apply stashed changes
+                    git stash pop || true
+
+                    # Stage and commit version bump
                     git add .
                     git commit -m "ci: version bump" || true
 
+                    # Push updated version
                     git push origin HEAD:main
                 '''
             }

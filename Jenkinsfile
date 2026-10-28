@@ -80,16 +80,27 @@ pipeline {
 
 
         stage('commit version update') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app.git"
-                        sh 'git add .'
-                        sh 'git commit -m "ci: version bump" || true'
-                        sh 'git push origin HEAD:main'
-                    }
-                }
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+
+                sh '''
+                    git config user.email "zerbisrat@gmail.com"
+                    git config user.name "Hellobisrat"
+
+                    git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app.git
+
+                    git pull origin main --rebase || true
+
+                    git add .
+                    git commit -m "ci: version bump" || true
+
+                    git push origin HEAD:main
+                '''
             }
         }
+    }
+}
+
     }
 }

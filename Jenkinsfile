@@ -59,7 +59,7 @@ pipeline {
 
         withCredentials([
             string(credentialsId: 'jenkins_aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
-            string(credentialsId: 'jenkins-aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+            string(credentialsId: 'jenkins_aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
         ]) {
             sh '''
                 echo "Using AWS credentials..."

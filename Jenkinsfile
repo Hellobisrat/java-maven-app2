@@ -85,29 +85,29 @@ pipeline {
             withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
 
                 
-                sh '''
-                    git config user.email "zerbisrat@gmail.com"
-                    git config user.name "Hellobisrat"
+               sh """
+    git config user.email "zerbisrat@gmail.com"
+    git config user.name "Hellobisrat"
 
-                    git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app2.git
+    git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app2.git
 
+    # Stash local changes (version bump)
+    git stash
 
-                    # Stash local changes (version bump)
-                    git stash
+    # Pull latest changes from GitHub for the current branch
+    git pull origin ${env.BRANCH_NAME} --rebase || true
 
-                    # Pull latest changes from GitHub
-                    git pull origin main --rebase
+    # Re-apply stashed changes
+    git stash pop || true
 
-                    # Re-apply stashed changes
-                    git stash pop || true
+    # Stage and commit version bump
+    git add .
+    git commit -m "ci: version bump" || true
 
-                    # Stage and commit version bump
-                    git add .
-                    git commit -m "ci: version bump" || true
+    # Push updated version to the same branch Jenkins is building
+    git push origin HEAD:${env.BRANCH_NAME}
+"""
 
-                    # Push updated version
-                    git push origin HEAD:main
-                '''
             }
         }
     }

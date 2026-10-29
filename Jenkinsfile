@@ -92,6 +92,7 @@ pipeline {
                     git remote set-url origin https://${USER}:${PASS}@github.com/Hellobisrat/java-maven-app2.git
 
 
+
                     # Stash local changes (version bump)
                     git stash
 
